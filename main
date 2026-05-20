@@ -1,0 +1,273 @@
+#include <iostream>
+#include <limits>
+using namespace std;
+
+#define TAM 10
+
+struct Lista {
+    int quant;
+    char v[TAM];
+};
+
+// Limpa o estado de erro do cin e descarta o restante da linha atual
+void limparBuffer() {
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+}
+
+// Exibe opcoes de reintento e retorna true se o usuario escolher tentar novamente
+bool tentarNovamente() {
+    int escolha;
+    cout << "\n  1 - Tentar novamente\n";
+    cout << "  0 - Voltar ao menu\n";
+    cout << "  Opcao: ";
+    cin >> escolha;
+    limparBuffer();
+    while (cin.fail() || (escolha != 0 && escolha != 1)) {
+        cout << "  Invalido! Digite 1 para tentar novamente ou 0 para o menu: ";
+        cin >> escolha;
+        limparBuffer();
+    }
+    return escolha == 1;
+}
+
+// Inicializa a lista com zero elementos
+void iniciaLista(Lista *L) {
+    L->quant = 0;
+}
+
+// Valida a opcao digitada no menu; rejeita entradas nao-numericas e fora do intervalo [0,8]
+int validaMenu(int op) {
+    while (true) {
+        if (cin.fail() || op < 0 || op > 8) {
+            limparBuffer();
+            cout << "\nInvalido! Digite novamente: ";
+            cin >> op;
+        } else {
+            return op;
+        }
+    }
+}
+
+// Le um inteiro do teclado; retorna false e limpa o buffer se a entrada for invalida
+bool lerInt(int &val) {
+    cin >> val;
+    if (cin.fail()) {
+        limparBuffer();
+        return false;
+    }
+    return true;
+}
+
+// Le e valida uma posicao no intervalo [0, limite]; retorna -1 se o usuario cancelar
+int lerPosicaoValida(int limite) {
+    int k;
+    while (!lerInt(k) || k < 0 || k > limite) {
+        cout << "ERRO: Posicao invalida! Deve ser entre 0 e " << limite << ".\n";
+        if (!tentarNovamente()) return -1;
+        cout << "  Informe a posicao (0 a " << limite << "): ";
+    }
+    return k;
+}
+
+// Exibe o menu de opcoes e retorna a opcao validada escolhida pelo usuario
+int menu() {
+    int op;
+    cout << "\n------------------------ M E N U ------------------------\n\n";
+    cout << " 1 - Inserir elemento no final da lista\n";
+    cout << " 2 - Inserir elemento no inicio da lista\n";
+    cout << " 3 - Inserir elemento em nodo especifico da lista\n";
+    cout << " 4 - Alterar elemento da lista\n";
+    cout << " 5 - Excluir elemento da lista\n";
+    cout << " 6 - Buscar elemento na lista\n";
+    cout << " 7 - Mostrar elemento em determinado nodo\n";
+    cout << " 8 - Imprimir lista\n";
+    cout << " 0 - SAIR\n";
+    cout << "\n---------------------------------------------------------\n";
+    cout << "\nDigite uma das opcoes: ";
+    cin >> op;
+    return validaMenu(op);
+}
+
+// Imprime todos os elementos da lista com seus respectivos indices
+void imprimirLista(Lista *L) {
+    if (L->quant > 0) {
+        cout << "\nLista [ ";
+        for (int i = 0; i < L->quant; i++)
+            cout << "(" << i << ")=" << L->v[i] << "  ";
+        cout << "]\n";
+    } else {
+        cout << "Nao ha elementos na lista.\n";
+    }
+}
+
+// Insere um caractere no final da lista
+void casoInserirFim(Lista *L) {
+    while (true) {
+        if (L->quant >= TAM) {
+            cout << "\nERRO: Lista cheia! Nao ha espaco disponivel.\n";
+            if (!tentarNovamente()) break;
+            continue;
+        }
+        char dado;
+        cout << "\n- Inserir no final da lista -\n Informe o dado: ";
+        cin >> ws >> dado;
+        L->v[L->quant++] = dado;
+        cout << "Dado '" << dado << "' inserido com sucesso!\n";
+        break;
+    }
+}
+
+// Insere um caractere no inicio da lista, deslocando os elementos existentes
+void casoInserirInicio(Lista *L) {
+    while (true) {
+        if (L->quant >= TAM) {
+            cout << "\nERRO: Lista cheia! Nao ha espaco disponivel.\n";
+            if (!tentarNovamente()) break;
+            continue;
+        }
+        char dado;
+        cout << "\n- Inserir no inicio da lista -\n Informe o dado: ";
+        cin >> ws >> dado;
+        for (int i = L->quant; i > 0; i--)
+            L->v[i] = L->v[i - 1];
+        L->v[0] = dado;
+        L->quant++;
+        cout << "Dado '" << dado << "' inserido no inicio com sucesso!\n";
+        break;
+    }
+}
+
+// Insere um caractere em uma posicao especifica informada pelo usuario
+void casoInserir(Lista *L) {
+    while (true) {
+        if (L->quant >= TAM) {
+            cout << "\nERRO: Lista cheia! Nao ha espaco disponivel.\n";
+            if (!tentarNovamente()) break;
+            continue;
+        }
+        cout << "\n- Inserir em nodo especifico -\n Informe a posicao (0 a "
+             << L->quant << "): ";
+        int k = lerPosicaoValida(L->quant);
+        if (k == -1) break;
+        char dado;
+        cout << " Informe o dado: ";
+        cin >> ws >> dado;
+        for (int i = L->quant; i > k; i--)
+            L->v[i] = L->v[i - 1];
+        L->v[k] = dado;
+        L->quant++;
+        cout << "Dado '" << dado << "' inserido na posicao " << k << " com sucesso!\n";
+        break;
+    }
+}
+
+// Substitui o caractere de uma posicao informada pelo usuario
+void casoAlterar(Lista *L) {
+    while (true) {
+        if (L->quant == 0) {
+            cout << "\nERRO: Lista vazia!\n";
+            if (!tentarNovamente()) break;
+            continue;
+        }
+        cout << "\n- Alterar elemento -\n Informe a posicao (0 a "
+             << L->quant - 1 << "): ";
+        int k = lerPosicaoValida(L->quant - 1);
+        if (k == -1) break;
+        char dado;
+        cout << " Elemento atual: '" << L->v[k] << "'\n Informe o novo dado: ";
+        cin >> ws >> dado;
+        L->v[k] = dado;
+        cout << "Elemento na posicao " << k << " alterado para '" << dado << "' com sucesso!\n";
+        break;
+    }
+}
+
+// Remove o elemento de uma posicao informada e desloca os seguintes
+void casoExcluir(Lista *L) {
+    while (true) {
+        if (L->quant == 0) {
+            cout << "\nERRO: Lista vazia!\n";
+            if (!tentarNovamente()) break;
+            continue;
+        }
+        cout << "\n- Excluir elemento -\n Informe a posicao (0 a "
+             << L->quant - 1 << "): ";
+        int k = lerPosicaoValida(L->quant - 1);
+        if (k == -1) break;
+        char removido = L->v[k];
+        for (int i = k; i < L->quant - 1; i++)
+            L->v[i] = L->v[i + 1];
+        L->quant--;
+        cout << "Elemento '" << removido << "' removido da posicao " << k << " com sucesso!\n";
+        break;
+    }
+}
+
+// Busca um caractere na lista e informa o nodo em que foi encontrado
+void casoBuscar(Lista *L) {
+    while (true) {
+        if (L->quant == 0) {
+            cout << "\nERRO: Lista vazia!\n";
+            if (!tentarNovamente()) break;
+            continue;
+        }
+        char dado;
+        cout << "\n- Buscar elemento -\n Informe o dado a buscar: ";
+        cin >> ws >> dado;
+        bool encontrado = false;
+        for (int i = 0; i < L->quant; i++) {
+            if (L->v[i] == dado) {
+                cout << "Elemento '" << dado << "' encontrado no nodo " << i << ".\n";
+                encontrado = true;
+                break;
+            }
+        }
+        if (!encontrado) {
+            cout << "ERRO: Elemento '" << dado << "' nao encontrado na lista.\n";
+            if (!tentarNovamente()) break;
+        } else {
+            break;
+        }
+    }
+}
+
+// Exibe o caractere armazenado em um nodo informado pelo usuario
+void casoMostrar(Lista *L) {
+    while (true) {
+        if (L->quant == 0) {
+            cout << "\nERRO: Lista vazia!\n";
+            if (!tentarNovamente()) break;
+            continue;
+        }
+        cout << "\n- Mostrar elemento por nodo -\n Informe a posicao (0 a "
+             << L->quant - 1 << "): ";
+        int k = lerPosicaoValida(L->quant - 1);
+        if (k == -1) break;
+        cout << "Elemento no nodo " << k << ": '" << L->v[k] << "'\n";
+        break;
+    }
+}
+
+int main() {
+    Lista L;
+    int op;
+    iniciaLista(&L);
+
+    do {
+        op = menu();
+        switch (op) {
+            case 1: casoInserirFim(&L);    break;
+            case 2: casoInserirInicio(&L); break;
+            case 3: casoInserir(&L);       break;
+            case 4: casoAlterar(&L);       break;
+            case 5: casoExcluir(&L);       break;
+            case 6: casoBuscar(&L);        break;
+            case 7: casoMostrar(&L);       break;
+            case 8: imprimirLista(&L);     break;
+            case 0: cout << "\nENCERRANDO...\n"; break;
+        }
+    } while (op != 0);
+
+    return 0;
+}
