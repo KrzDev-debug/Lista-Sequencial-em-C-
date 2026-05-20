@@ -1,4 +1,4 @@
-# Lista-Sequencial-em-C-
+# Lista-Sequencial-em-C++
 Implementação de uma lista sequencial estática em C++, utilizando vetor (array) para armazenar elementos do tipo char.
 
 Este projeto foi desenvolvido com o objetivo de praticar conceitos básicos de estrutura de dados, como:
