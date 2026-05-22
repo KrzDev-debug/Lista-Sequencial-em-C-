@@ -1,6 +1,6 @@
 # Lista Sequencial em C++
 
-Implementação de uma **lista sequencial estática** utilizando array em C++, com operações básicas de manipulação de dados via terminal.
+Implementação de uma lista sequencial estática utilizando array em C++, com operações básicas de manipulação de dados via terminal.
 
 ---
 
@@ -46,8 +46,6 @@ Implementação de uma **lista sequencial estática** utilizando array em C++, c
 
 ---
 
-## Como compilar e executar
+## Objetivo
 
-```bash
-g++ main.cpp -o programa
-./programa
+Projeto desenvolvido para prática de conceitos fundamentais de estruturas de dados, com foco em listas sequenciais e manipulação de arrays em C++.
